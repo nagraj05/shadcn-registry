@@ -1,86 +1,305 @@
+"use client";
 
-"use client"
 import Link from "next/link";
-import { Sparkles, Layout, Folder, Zap } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Search, ArrowUpRight, Layers } from "lucide-react";
 
-const NavigationCards = [
-  {
-    id: 1,
-    name: "Animate UI",
-    description: "Explore our collection of high-performance animated components.",
-    href: "/animate-ui",
-    icon: Sparkles,
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
-  },
-  {
-    id: 2,
-    name: "UI Components",
-    description: "Standard building blocks for your next big project.",
-    href: "/ui",
-    icon: Layout,
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10",
-  },
-]
+// ─── Auto-generated from your app/ folder structure ───────────────────────
+const SECTIONS = [
+  "8bitcn",
+  "8starlabs-ui",
+  "abstract",
+  "abui",
+  "aceternity",
+  "aevr",
+  "agents-ui",
+  "ahadcraft",
+  "ai-blocks",
+  "ai-elements",
+  "algolia",
+  "aliimam",
+  "animate-ui",
+  "animbits",
+  "arc",
+  "asanshay",
+  "assistant-ui",
+  "auth0",
+  "basecn",
+  "baselayer",
+  "beste-ui",
+  "better-upload",
+  "billingsdk",
+  "blocks-so",
+  "boldkit",
+  "bundui",
+  "cardcn",
+  "clerkchamaac",
+  "commercn",
+  "componentry",
+  "creative-tim",
+  "cult-ui",
+  "darx",
+  "diceui",
+  "doras-ui",
+  "dsikeres1",
+  "effered",
+  "einui",
+  "eldoraui",
+  "elements",
+  "elevenlabs-ui",
+  "emerald-ui",
+  "fab-ui",
+  "fluid",
+  "flx",
+  "fonttrio",
+  "forge-ui",
+  "formcn",
+  "gaia",
+  "gamifykit",
+  "gammaui",
+  "gc-solid",
+  "glass-ui",
+  "gooseui",
+  "ha-components",
+  "headcodecms",
+  "heroicons-animated",
+  "hextaui",
+  "iconiq",
+  "icons-animated",
+  "inferencesh",
+  "intentui",
+  "jalco",
+  "jolyui",
+  "joyco",
+  "kanpeki",
+  "kapwa",
+  "kibo-ui",
+  "kokonutui",
+  "launchui",
+  "lens-blocks",
+  "limeplay",
+  "lmscn",
+  "lucide-animated",
+  "lumiui",
+  "lytenyte",
+  "magicui",
+  "manifest",
+  "mapcn",
+  "moleculeui",
+  "motion-primitives",
+  "mui-treasury",
+  "ncdai",
+  "neobrutalism",
+  "nessra-ui",
+  "nexus-elements",
+  "nexus-ui",
+  "nteract",
+  "nuqs",
+  "odysseyui",
+  "openstatus",
+  "optics",
+  "oui",
+  "pacekit",
+  "pacekit-gsap",
+  "paletteui",
+  "pastecn",
+  "paykit-sdk",
+  "phucbm",
+  "pixelact-ui",
+  "plate",
+  "prompt-kit",
+  "prosekit",
+  "pulkitxm",
+  "pureui",
+  "react-aria",
+  "react-bits",
+  "react-easy-modals",
+  "react-slot",
+  "rescript-shadcn",
+  "retroui",
+  "reui",
+  "sabraman",
+  "satoriui",
+  "scrollxui",
+  "shadcn-dashboard",
+  "shadcn-editor",
+  "shadcn-map",
+  "shadcn-space",
+  "shadcn-studio",
+  "shadcnblocks",
+  "shadcndesign",
+  "shadcnhooks",
+  "shadcnmaps",
+  "shadcnstore",
+  "shadcnui-blocks",
+  "shadcnuikit",
+  "skiper-ui",
+  "slide-cn",
+  "smoothui",
+  "solaceui",
+  "sona-ui",
+  "soundcn",
+  "spectrumui",
+  "spell",
+  "square-ui",
+  "supabase",
+  "svgl",
+  "systaliko-ui",
+  "tailark",
+  "tailwind-admin",
+  "tailwind-builder",
+  "taki",
+  "terrae",
+  "thegridcn",
+  "tokenui",
+  "tool-ui",
+  "tour",
+  "typedora-ui",
+  "ui-layouts",
+  "uicapsule",
+  "uitripled",
+  "unlumen-ui",
+  "uselayouts",
+  "utilcn",
+  "w3-kit",
+  "wandry-ui",
+  "waves-cn",
+  "wds",
+  "wiggle-ui",
+  "zippystarter",
+];
+
+// Assign a stable pastel accent per entry (cycles through palette)
+const ACCENTS = [
+  "from-sky-500/20 to-sky-500/5 border-sky-500/20 hover:border-sky-400/60",
+  "from-violet-500/20 to-violet-500/5 border-violet-500/20 hover:border-violet-400/60",
+  "from-emerald-500/20 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-400/60",
+  "from-amber-500/20 to-amber-500/5 border-amber-500/20 hover:border-amber-400/60",
+  "from-rose-500/20 to-rose-500/5 border-rose-500/20 hover:border-rose-400/60",
+  "from-cyan-500/20 to-cyan-500/5 border-cyan-500/20 hover:border-cyan-400/60",
+  "from-fuchsia-500/20 to-fuchsia-500/5 border-fuchsia-500/20 hover:border-fuchsia-400/60",
+  "from-orange-500/20 to-orange-500/5 border-orange-500/20 hover:border-orange-400/60",
+];
+
+const DOT_COLORS = [
+  "bg-sky-400",
+  "bg-violet-400",
+  "bg-emerald-400",
+  "bg-amber-400",
+  "bg-rose-400",
+  "bg-cyan-400",
+  "bg-fuchsia-400",
+  "bg-orange-400",
+];
 
 export default function Home() {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(
+    () => SECTIONS.filter((s) => s.toLowerCase().includes(query.toLowerCase())),
+    [query],
+  );
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans selection:bg-primary selection:text-primary-foreground">
-      {/* Background decoration */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-[10%] -right-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]" />
-      </div>
+    <div className="min-h-screen bg-[#0a0a0a] text-zinc-100 font-mono selection:bg-zinc-700">
+      {/* ── Subtle grid background ── */}
+      <div
+        className="fixed inset-0 z-0 pointer-events-none opacity-[0.035]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
 
-      <div className="relative z-10 flex flex-col items-center justify-center px-6 py-24 md:py-32">
-        {/* Hero Section */}
-        <div className="text-center space-y-6 max-w-2xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/5 dark:bg-zinc-100/5 border border-zinc-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-wider text-zinc-500 animate-in fade-in slide-in-from-bottom-3 duration-1000">
-            <Zap className="size-3 text-amber-500 fill-amber-500" />
-            Next Gen UI Kit
+      {/* ── Glow blobs ── */}
+      <div className="fixed top-[-20%] left-[10%] w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-[120px] pointer-events-none z-0" />
+      <div className="fixed bottom-[-10%] right-[5%] w-[400px] h-[400px] rounded-full bg-sky-500/10 blur-[100px] pointer-events-none z-0" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
+        {/* ── Header ── */}
+        <header className="mb-14">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="size-9 rounded-lg bg-gradient-to-br from-violet-500 to-sky-500 flex items-center justify-center shadow-lg shadow-violet-500/30">
+              <Layers className="size-4 text-white" />
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-zinc-500">
+              shadcn — component registry
+            </span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-zinc-900 dark:text-zinc-50 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-            Build Faster. <span className="text-primary italic">Animate</span> Better.
+
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white leading-none mb-4">
+            Shadcn{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">
+              Registry
+            </span>
           </h1>
-          <p className="text-lg text-zinc-500 dark:text-zinc-400 animate-in fade-in slide-in-from-bottom-5 duration-1000 delay-300">
-            A curated collection of modern, accessible, and high-performance components for your Next.js applications.
+          <p className="text-zinc-500 text-sm max-w-md leading-relaxed">
+            {SECTIONS.length} component libraries, all in one place. Click any
+            card to explore — or come back when it&apos;s ready.
           </p>
+        </header>
+
+        {/* ── Search ── */}
+        <div className="relative mb-10 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-600" />
+          <input
+            type="text"
+            placeholder="Search libraries…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full pl-10 pr-16 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/60 transition-colors"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-600 tabular-nums">
+            {filtered.length}/{SECTIONS.length}
+          </span>
         </div>
 
-        {/* Navigation Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-500">
-          {NavigationCards.map((card) => (
-            <Link key={card.id} href={card.href} className="group no-underline">
-              <div className="h-full p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-sm hover:bg-white dark:hover:bg-zinc-950 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 flex flex-col md:flex-row items-center md:items-start gap-6">
-                <div className={`shrink-0 size-16 rounded-2xl ${card.bgColor} flex items-center justify-center transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
-                  <card.icon className={`size-8 ${card.color}`} />
-                </div>
-                <div className="text-center md:text-left space-y-2">
-                  <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 group-hover:text-primary transition-colors">
-                    {card.name}
-                  </h3>
-                  <p className="text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed">
-                    {card.description}
-                  </p>
-                  <div className="pt-4 flex items-center justify-center md:justify-start">
-                    <span className="text-primary text-xs font-black uppercase tracking-widest opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
-                      Explore Section →
-                    </span>
+        {/* ── Grid ── */}
+        {filtered.length === 0 ? (
+          <div className="text-center py-20 text-zinc-600 text-sm">
+            No libraries match &ldquo;{query}&rdquo;
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+            {filtered.map((name, i) => {
+              const accent = ACCENTS[i % ACCENTS.length];
+              const dot = DOT_COLORS[i % DOT_COLORS.length];
+              return (
+                <Link
+                  key={name}
+                  href={`/${name}`}
+                  className={`
+                    group relative flex flex-col justify-between p-4 rounded-2xl
+                    bg-gradient-to-br ${accent}
+                    border backdrop-blur-sm
+                    transition-all duration-300
+                    hover:scale-[1.03] hover:shadow-xl hover:shadow-black/30
+                  `}
+                >
+                  {/* top row */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div
+                      className={`size-2 rounded-full ${dot} opacity-70 group-hover:opacity-100 transition-opacity`}
+                    />
+                    <ArrowUpRight className="size-3.5 text-zinc-600 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-1 translate-x-1 group-hover:translate-y-0 group-hover:translate-x-0" />
                   </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
 
-        {/* Footer info */}
-        <div className="mt-24 text-zinc-400 dark:text-zinc-600 text-xs font-medium flex items-center gap-4 animate-in fade-in duration-1000 delay-700">
-            <Folder className="size-4" />
-            <span>Project: shadcn-new-animate</span>
-            <span className="opacity-20">|</span>
-            <span>Version: 2.0.0</span>
-        </div>
+                  {/* name */}
+                  <span className="text-[11px] font-semibold text-zinc-300 group-hover:text-white transition-colors leading-snug break-all uppercase">
+                    {name}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── Footer ── */}
+        <footer className="mt-20 pt-8 border-t border-zinc-900 text-[10px] text-zinc-700 flex items-center justify-between">
+          <span>shadcn · {SECTIONS.length} libraries</span>
+          <span>Next.js · TypeScript · Tailwind</span>
+        </footer>
       </div>
     </div>
   );

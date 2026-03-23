@@ -1,3 +1,11 @@
+import os
+import sys
+
+# ── Config ───────────────────────────────────────────────────────────────────
+APP_DIR = "app"   # relative to where you run the script
+# ─────────────────────────────────────────────────────────────────────────────
+
+PAGE_CONTENT = '''\
 "use client";
 
 import Link from "next/link";
@@ -51,3 +59,51 @@ export default function ComingSoonPage() {
     </div>
   );
 }
+'''
+
+
+def main():
+    overwrite = "--overwrite" in sys.argv
+
+    app_path = os.path.join(os.getcwd(), APP_DIR)
+
+    if not os.path.isdir(app_path):
+        print(f"❌  Directory not found: {app_path}")
+        sys.exit(1)
+
+    created = []
+    updated = []
+    skipped = []
+
+    for entry in sorted(os.scandir(app_path), key=lambda e: e.name):
+        if not entry.is_dir():
+            continue
+
+        page_file = os.path.join(entry.path, "page.tsx")
+
+        if os.path.exists(page_file):
+            if overwrite:
+                with open(page_file, "w", encoding="utf-8") as f:
+                    f.write(PAGE_CONTENT)
+                updated.append(entry.name)
+                print(f"🔄  Updated  → {entry.name}/page.tsx")
+            else:
+                skipped.append(entry.name)
+                print(f"⏭   Skipped  → {entry.name}/page.tsx  (already exists)")
+        else:
+            with open(page_file, "w", encoding="utf-8") as f:
+                f.write(PAGE_CONTENT)
+            created.append(entry.name)
+            print(f"✅  Created  → {entry.name}/page.tsx")
+
+    print()
+    if overwrite:
+        print(f"Done.  Updated: {len(updated)}   Created: {len(created)}")
+    else:
+        print(f"Done.  Created: {len(created)}   Skipped: {len(skipped)}")
+        if skipped:
+            print(f"\n💡  To overwrite existing pages, run:  python create_pages.py --overwrite")
+
+
+if __name__ == "__main__":
+    main()
