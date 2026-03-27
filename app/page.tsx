@@ -214,10 +214,15 @@ function StatusBadge({ status }: { status: LibraryStatus }) {
 
 export default function Home() {
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<LibraryStatus | "all">("all");
 
   const filtered = useMemo(
-    () => SECTIONS.filter((s) => s.name.toLowerCase().includes(query.toLowerCase())),
-    [query],
+    () => SECTIONS.filter((s) => {
+      const matchesSearch = s.name.toLowerCase().includes(query.toLowerCase());
+      const matchesStatus = statusFilter === "all" || s.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    }),
+    [query, statusFilter],
   );
 
   return (
@@ -269,19 +274,39 @@ export default function Home() {
           </div>
         </header>
 
-        {/* ── Search ── */}
-        <div className="relative mb-10 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-600" />
-          <input
-            type="text"
-            placeholder="Search libraries…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-16 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/60 transition-colors"
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-600 tabular-nums">
-            {filtered.length}/{SECTIONS.length}
-          </span>
+        <div className="flex flex-col md:flex-row gap-4 mb-10 items-start md:items-center">
+          {/* ── Search ── */}
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-600" />
+            <input
+              type="text"
+              placeholder="Search libraries…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="w-full pl-10 pr-16 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/60 transition-colors"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-zinc-600 tabular-nums">
+              {filtered.length}/{SECTIONS.length}
+            </span>
+          </div>
+
+          {/* ── Filter Tabs ── */}
+          <div className="flex p-1  bg-zinc-900/50 border border-zinc-800 rounded-xl overflow-hidden shrink-0">
+            {(["all", "useful", "not-useful", "not-maintained"] as const).map((id) => (
+              <button
+                key={id}
+                onClick={() => setStatusFilter(id)}
+                className={`
+                  px-4 py-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer
+                  ${statusFilter === id 
+                    ? "bg-zinc-800 text-white shadow-sm" 
+                    : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}
+                `}
+              >
+                {id === "all" ? "All" : STATUS_CONFIG[id].label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Grid ── */}
